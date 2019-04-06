@@ -34,12 +34,15 @@ depends_on = None
 
 
 def upgrade():
-    op.create_foreign_key(
-        None, "dag_run", "dag", ["dag_id"], ["dag_id"], ondelete="CASCADE"
-    )
-    op.create_foreign_key(
-        None, "task_instance", "dag", ["dag_id"], ["dag_id"], ondelete="CASCADE"
-    )
+    with op.batch_alter_table('dag_run') as batch_op:
+        batch_op.create_foreign_key(
+            'dag__dag_run__fk', "dag", ["dag_id"], ["dag_id"], ondelete="CASCADE"
+        )
+
+    with op.batch_alter_table('task_instance') as batch_op:
+        batch_op.create_foreign_key(
+            'dag__task_instance__fk', "dag", ["dag_id"], ["dag_id"], ondelete="CASCADE"
+        )
 
 
 def downgrade():
